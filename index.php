@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Action ou Vérité - Jeu Lubumbashi</title>
+    <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Écran de sélection de difficulté -->
+        <div id="difficultyScreen" class="screen active">
+            <h1>Action ou Vérité</h1>
+            <p class="subtitle">Choisissez votre niveau de difficulté</p>
+            <div class="difficulty-buttons">
+                <button class="btn btn-soft" onclick="selectDifficulty('soft')">
+                    <span class="difficulty-icon">🌱</span>
+                    <span class="difficulty-name">Soft</span>
+                </button>
+                <button class="btn btn-medium" onclick="selectDifficulty('medium')">
+                    <span class="difficulty-icon">🔥</span>
+                    <span class="difficulty-name">Medium</span>
+                </button>
+                <button class="btn btn-hard" onclick="selectDifficulty('hard')">
+                    <span class="difficulty-icon">⚡</span>
+                    <span class="difficulty-name">Hard</span>
+                </button>
+                <button class="btn btn-extreme" onclick="selectDifficulty('extreme')">
+                    <span class="difficulty-icon">💀</span>
+                    <span class="difficulty-name">Extreme</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Écran d'ajout de joueurs -->
+        <div id="playersScreen" class="screen">
+            <h1>Ajouter les joueurs</h1>
+            <div class="players-input-section">
+                <input type="text" id="playerInput" placeholder="Entrez le nom du joueur" onkeypress="handlePlayerKeyPress(event)">
+                <button class="btn btn-primary" onclick="addPlayer()">Ajouter</button>
+            </div>
+            
+            <div class="players-list">
+                <h3>Joueurs (<?php echo "{{ playersCount }}"; ?>)</h3>
+                <ul id="playersList"></ul>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn btn-secondary" onclick="goBackToDifficulty()">Retour</button>
+                <button class="btn btn-primary" id="startGameBtn" onclick="startGame()" disabled>Commencer le jeu</button>
+            </div>
+        </div>
+
+        <!-- Écran principal du jeu -->
+        <div id="gameScreen" class="screen">
+            <div class="game-header">
+                <div class="current-player">
+                    <p class="label">Joueur actuel</p>
+                    <h2 id="currentPlayerName"></h2>
+                </div>
+                <div class="next-player">
+                    <p class="label">Prochain</p>
+                    <p id="nextPlayerName"></p>
+                </div>
+            </div>
+
+            <div class="game-content">
+                <div class="challenge-section">
+                    <div class="choice-buttons">
+                        <button class="btn btn-choice btn-truth" onclick="selectChallenge('truth')">
+                            <span class="choice-icon">🤔</span>
+                            <span class="choice-text">Vérité</span>
+                        </button>
+                        <button class="btn btn-choice btn-action" onclick="selectChallenge('action')">
+                            <span class="choice-icon">🎬</span>
+                            <span class="choice-text">Action</span>
+                        </button>
+                    </div>
+
+                    <div id="challengeDisplay" class="challenge-display hidden">
+                        <div class="challenge-type" id="challengeType"></div>
+                        <div class="challenge-text" id="challengeText"></div>
+                        <button class="btn btn-primary" onclick="nextChallenge()">Défi suivant</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="game-footer">
+                <button class="btn btn-secondary" onclick="resetGame()">Recommencer</button>
+            </div>
+        </div>
+
+        <!-- Écran de fin de tour -->
+        <div id="roundEndScreen" class="screen">
+            <h2>Fin de tour !</h2>
+            <p>Tout le monde a joué une fois.</p>
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="restartWithSameOrder()">Recommencer avec le même ordre</button>
+                <button class="btn btn-secondary" onclick="reshufflePlayers()">Remélanger la liste</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="assets/script.js"></script>
+</body>
+</html>
