@@ -1,6 +1,6 @@
 /**
  * Action ou Vérité - PWA Moderne
- * Logique de jeu avec interactions entre joueurs et support PWA
+ * Logique de jeu avec interactions entre joueurs, support PWA et Thèmes
  */
 
 // ============================================
@@ -25,10 +25,31 @@ let gameState = {
 let deferredPrompt;
 
 // ============================================
+// GESTION DU THÈME (SOMBRE/CLAIR)
+// ============================================
+
+function initTheme() {
+    const themeBtn = document.getElementById('themeBtn');
+    const themeIcon = document.getElementById('themeIcon');
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+
+    if (savedTheme === 'light') {
+        document.body.classList.add('light-mode');
+        themeIcon.textContent = '☀️';
+    }
+
+    themeBtn?.addEventListener('click', () => {
+        document.body.classList.toggle('light-mode');
+        const isLight = document.body.classList.contains('light-mode');
+        themeIcon.textContent = isLight ? '☀️' : '🌙';
+        localStorage.setItem('theme', isLight ? 'light' : 'dark');
+    });
+}
+
+// ============================================
 // GESTION PWA
 // ============================================
 
-// Enregistrement du Service Worker
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('sw.js')
@@ -37,13 +58,9 @@ if ('serviceWorker' in navigator) {
     });
 }
 
-// Gestion de l'installation
 window.addEventListener('beforeinstallprompt', (e) => {
-    // Empêche Chrome d'afficher le prompt automatique
     e.preventDefault();
-    // Stocke l'événement pour plus tard
     deferredPrompt = e;
-    // Affiche le bouton d'installation
     const installBtn = document.getElementById('installBtn');
     if (installBtn) {
         installBtn.style.display = 'flex';
@@ -52,22 +69,13 @@ window.addEventListener('beforeinstallprompt', (e) => {
 
 document.getElementById('installBtn')?.addEventListener('click', async () => {
     if (!deferredPrompt) return;
-    
-    // Affiche le prompt d'installation
     deferredPrompt.prompt();
-    
-    // Attend la réponse de l'utilisateur
     const { outcome } = await deferredPrompt.userChoice;
     console.log(`Résultat de l'installation: ${outcome}`);
-    
-    // On ne peut plus utiliser l'événement
     deferredPrompt = null;
-    
-    // Cache le bouton
     document.getElementById('installBtn').style.display = 'none';
 });
 
-// Cache le bouton si déjà installé
 window.addEventListener('appinstalled', (evt) => {
     console.log('Application installée');
     document.getElementById('installBtn').style.display = 'none';
@@ -235,21 +243,14 @@ function getRandomChallenge(type) {
     return challenges[randomIndex];
 }
 
-/**
- * Traite le texte du défi pour inclure un deuxième joueur si nécessaire
- */
 function processChallengeText(text, type) {
     const currentPlayer = gameState.shuffledPlayers[gameState.currentPlayerIndex];
     
-    // Si c'est une action, on peut désigner un deuxième joueur
     if (type === 'action') {
-        // Liste des autres joueurs
         const otherPlayers = gameState.players.filter(p => p !== currentPlayer);
         if (otherPlayers.length > 0) {
             const secondPlayer = otherPlayers[Math.floor(Math.random() * otherPlayers.length)];
             
-            // On remplace les expressions génériques par le nom du deuxième joueur
-            // Ex: "la personne à ta droite" -> "[Nom]"
             const replacements = [
                 { regex: /la personne à ta droite/gi, replacement: secondPlayer },
                 { regex: /la personne à ta gauche/gi, replacement: secondPlayer },
@@ -263,7 +264,6 @@ function processChallengeText(text, type) {
                 newText = newText.replace(r.regex, r.replacement);
             });
 
-            // Si aucune substitution n'a été faite mais que l'action semble s'adresser à autrui
             if (newText === text && (text.includes("fait un compliment") || text.includes("imite"))) {
                 return `${currentPlayer}, fais un compliment à ${secondPlayer} : ${text}`;
             }
@@ -323,5 +323,6 @@ function resetGame() {
 
 // Initialisation
 document.addEventListener('DOMContentLoaded', () => {
+    initTheme();
     showScreen('difficultyScreen');
 });

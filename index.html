@@ -10,14 +10,22 @@
     <link rel="apple-touch-icon" href="assets/icon-192.png">
 </head>
 <body>
+    <!-- Commutateur de thème -->
+    <div class="theme-toggle">
+        <button id="themeBtn" class="btn-theme" title="Changer de mode">
+            <span id="themeIcon">🌙</span>
+        </button>
+    </div>
+
     <div class="container">
         <!-- Écran de sélection de difficulté -->
         <div id="difficultyScreen" class="screen active">
             <h1>Action ou Vérité</h1>
             <p class="subtitle">Choisissez votre niveau de défi</p>
             
+            <!-- Bouton d'installation amélioré -->
             <button id="installBtn" class="btn btn-install" style="display: none;">
-                <span>📲</span> Installer l'application
+                <span>📥</span> Télécharger l'application
             </button>
 
             <div class="difficulty-buttons">
@@ -85,7 +93,7 @@
                         </button>
                     </div>
 
-                    <div id="challengeDisplay" class="challenge-display hidden">
+                    <div id="challengeDisplay" class="challenge-display glass hidden">
                         <div class="challenge-type" id="challengeType"></div>
                         <div class="challenge-text" id="challengeText"></div>
                         <button class="btn btn-primary" onclick="nextChallenge()">Suivant</button>
