@@ -1,6 +1,6 @@
 /**
- * Action ou Vérité - Jeu interactif
- * Logique complète du jeu avec rotation équitable des joueurs
+ * Action ou Vérité - PWA Moderne
+ * Logique de jeu avec interactions entre joueurs et support PWA
  */
 
 // ============================================
@@ -22,35 +22,76 @@ let gameState = {
     roundsCompleted: 0
 };
 
+let deferredPrompt;
+
+// ============================================
+// GESTION PWA
+// ============================================
+
+// Enregistrement du Service Worker
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js')
+            .then(reg => console.log('Service Worker enregistré'))
+            .catch(err => console.log('Erreur SW:', err));
+    });
+}
+
+// Gestion de l'installation
+window.addEventListener('beforeinstallprompt', (e) => {
+    // Empêche Chrome d'afficher le prompt automatique
+    e.preventDefault();
+    // Stocke l'événement pour plus tard
+    deferredPrompt = e;
+    // Affiche le bouton d'installation
+    const installBtn = document.getElementById('installBtn');
+    if (installBtn) {
+        installBtn.style.display = 'flex';
+    }
+});
+
+document.getElementById('installBtn')?.addEventListener('click', async () => {
+    if (!deferredPrompt) return;
+    
+    // Affiche le prompt d'installation
+    deferredPrompt.prompt();
+    
+    // Attend la réponse de l'utilisateur
+    const { outcome } = await deferredPrompt.userChoice;
+    console.log(`Résultat de l'installation: ${outcome}`);
+    
+    // On ne peut plus utiliser l'événement
+    deferredPrompt = null;
+    
+    // Cache le bouton
+    document.getElementById('installBtn').style.display = 'none';
+});
+
+// Cache le bouton si déjà installé
+window.addEventListener('appinstalled', (evt) => {
+    console.log('Application installée');
+    document.getElementById('installBtn').style.display = 'none';
+});
+
 // ============================================
 // GESTION DES ÉCRANS
 // ============================================
 
-/**
- * Affiche un écran spécifique et cache les autres
- * @param {string} screenId - ID de l'écran à afficher
- */
 function showScreen(screenId) {
     const screens = document.querySelectorAll('.screen');
     screens.forEach(screen => {
         screen.classList.remove('active');
     });
-    document.getElementById(screenId).classList.add('active');
+    const target = document.getElementById(screenId);
+    target.classList.add('active');
 }
 
-/**
- * Sélectionne la difficulté et passe à l'écran d'ajout de joueurs
- * @param {string} difficulty - Niveau de difficulté (soft, medium, hard, extreme)
- */
 function selectDifficulty(difficulty) {
     gameState.difficulty = difficulty;
     loadChallenges(difficulty);
     showScreen('playersScreen');
 }
 
-/**
- * Retour à l'écran de sélection de difficulté
- */
 function goBackToDifficulty() {
     gameState.difficulty = null;
     gameState.players = [];
@@ -63,17 +104,11 @@ function goBackToDifficulty() {
 // GESTION DES JOUEURS
 // ============================================
 
-/**
- * Ajoute un joueur à la liste
- */
 function addPlayer() {
     const input = document.getElementById('playerInput');
     const playerName = input.value.trim();
 
-    if (!playerName) {
-        alert('Veuillez entrer un nom de joueur');
-        return;
-    }
+    if (!playerName) return;
 
     if (gameState.players.includes(playerName)) {
         alert('Ce joueur existe déjà !');
@@ -86,29 +121,18 @@ function addPlayer() {
     updateStartGameButton();
 }
 
-/**
- * Gère la touche Entrée pour ajouter un joueur
- * @param {Event} event - Événement clavier
- */
 function handlePlayerKeyPress(event) {
     if (event.key === 'Enter') {
         addPlayer();
     }
 }
 
-/**
- * Supprime un joueur de la liste
- * @param {number} index - Index du joueur à supprimer
- */
 function removePlayer(index) {
     gameState.players.splice(index, 1);
     updatePlayersList();
     updateStartGameButton();
 }
 
-/**
- * Met à jour l'affichage de la liste des joueurs
- */
 function updatePlayersList() {
     const playersList = document.getElementById('playersList');
     const playersCount = document.getElementById('playersCount');
@@ -128,9 +152,6 @@ function updatePlayersList() {
     }
 }
 
-/**
- * Met à jour l'état du bouton "Commencer le jeu"
- */
 function updateStartGameButton() {
     const btn = document.getElementById('startGameBtn');
     btn.disabled = gameState.players.length < 2;
@@ -140,28 +161,18 @@ function updateStartGameButton() {
 // CHARGEMENT DES DÉFIS
 // ============================================
 
-/**
- * Charge les défis depuis le fichier JSON correspondant
- * @param {string} difficulty - Niveau de difficulté
- */
 async function loadChallenges(difficulty) {
     try {
         const response = await fetch(`contenu/${difficulty}.json`);
-        if (!response.ok) {
-            throw new Error(`Erreur lors du chargement du fichier ${difficulty}.json`);
-        }
+        if (!response.ok) throw new Error('Erreur de chargement');
         const data = await response.json();
         gameState.challenges = {
             truths: data.truths,
             actions: data.actions
         };
-        gameState.usedIndices = {
-            truths: [],
-            actions: []
-        };
+        gameState.usedIndices = { truths: [], actions: [] };
     } catch (error) {
-        console.error('Erreur lors du chargement des défis:', error);
-        alert('Erreur lors du chargement des défis. Veuillez réessayer.');
+        console.error('Erreur:', error);
     }
 }
 
@@ -169,16 +180,9 @@ async function loadChallenges(difficulty) {
 // LOGIQUE DE JEU
 // ============================================
 
-/**
- * Démarre le jeu en mélangeant les joueurs
- */
 function startGame() {
-    if (gameState.players.length < 2) {
-        alert('Au minimum 2 joueurs sont requis');
-        return;
-    }
+    if (gameState.players.length < 2) return;
 
-    // Mélange la liste des joueurs une seule fois
     gameState.shuffledPlayers = shuffleArray([...gameState.players]);
     gameState.currentPlayerIndex = 0;
     gameState.roundsCompleted = 0;
@@ -187,11 +191,6 @@ function startGame() {
     updateGameDisplay();
 }
 
-/**
- * Mélange un tableau (algorithme Fisher-Yates)
- * @param {Array} array - Tableau à mélanger
- * @returns {Array} - Tableau mélangé
- */
 function shuffleArray(array) {
     const shuffled = [...array];
     for (let i = shuffled.length - 1; i > 0; i--) {
@@ -201,9 +200,6 @@ function shuffleArray(array) {
     return shuffled;
 }
 
-/**
- * Met à jour l'affichage du jeu (joueur actuel et prochain)
- */
 function updateGameDisplay() {
     const currentPlayer = gameState.shuffledPlayers[gameState.currentPlayerIndex];
     const nextIndex = (gameState.currentPlayerIndex + 1) % gameState.shuffledPlayers.length;
@@ -212,32 +208,22 @@ function updateGameDisplay() {
     document.getElementById('currentPlayerName').textContent = currentPlayer;
     document.getElementById('nextPlayerName').textContent = nextPlayer;
 
-    // Cache l'affichage du défi
     document.getElementById('challengeDisplay').classList.add('hidden');
+    document.querySelector('.choice-buttons').style.display = 'grid';
 }
 
-/**
- * Sélectionne un type de défi (Vérité ou Action)
- * @param {string} type - Type de défi ('truth' ou 'action')
- */
 function selectChallenge(type) {
     const challenge = getRandomChallenge(type);
-    displayChallenge(challenge, type);
+    const processedChallenge = processChallengeText(challenge, type);
+    displayChallenge(processedChallenge, type);
 }
 
-/**
- * Récupère un défi aléatoire non utilisé
- * @param {string} type - Type de défi ('truth' ou 'action')
- * @returns {string} - Le défi sélectionné
- */
 function getRandomChallenge(type) {
     const challenges = gameState.challenges[type === 'truth' ? 'truths' : 'actions'];
     const usedIndices = gameState.usedIndices[type === 'truth' ? 'truths' : 'actions'];
 
-    // Si tous les défis ont été utilisés, réinitialise la liste
     if (usedIndices.length === challenges.length) {
         gameState.usedIndices[type === 'truth' ? 'truths' : 'actions'] = [];
-        usedIndices.length = 0;
     }
 
     let randomIndex;
@@ -250,26 +236,59 @@ function getRandomChallenge(type) {
 }
 
 /**
- * Affiche le défi à l'écran
- * @param {string} challenge - Le texte du défi
- * @param {string} type - Type de défi ('truth' ou 'action')
+ * Traite le texte du défi pour inclure un deuxième joueur si nécessaire
  */
+function processChallengeText(text, type) {
+    const currentPlayer = gameState.shuffledPlayers[gameState.currentPlayerIndex];
+    
+    // Si c'est une action, on peut désigner un deuxième joueur
+    if (type === 'action') {
+        // Liste des autres joueurs
+        const otherPlayers = gameState.players.filter(p => p !== currentPlayer);
+        if (otherPlayers.length > 0) {
+            const secondPlayer = otherPlayers[Math.floor(Math.random() * otherPlayers.length)];
+            
+            // On remplace les expressions génériques par le nom du deuxième joueur
+            // Ex: "la personne à ta droite" -> "[Nom]"
+            const replacements = [
+                { regex: /la personne à ta droite/gi, replacement: secondPlayer },
+                { regex: /la personne à ta gauche/gi, replacement: secondPlayer },
+                { regex: /la personne en face de toi/gi, replacement: secondPlayer },
+                { regex: /chaque personne présente/gi, replacement: "tout le monde" },
+                { regex: /à quelqu'un/gi, replacement: `à ${secondPlayer}` }
+            ];
+
+            let newText = text;
+            replacements.forEach(r => {
+                newText = newText.replace(r.regex, r.replacement);
+            });
+
+            // Si aucune substitution n'a été faite mais que l'action semble s'adresser à autrui
+            if (newText === text && (text.includes("fait un compliment") || text.includes("imite"))) {
+                return `${currentPlayer}, fais un compliment à ${secondPlayer} : ${text}`;
+            }
+
+            return `${currentPlayer}, ${newText}`;
+        }
+    }
+    
+    return text;
+}
+
 function displayChallenge(challenge, type) {
     const typeLabel = type === 'truth' ? 'Vérité' : 'Action';
     const typeEmoji = type === 'truth' ? '🤔' : '🎬';
 
     document.getElementById('challengeType').textContent = `${typeEmoji} ${typeLabel}`;
     document.getElementById('challengeText').textContent = challenge;
+    
+    document.querySelector('.choice-buttons').style.display = 'none';
     document.getElementById('challengeDisplay').classList.remove('hidden');
 }
 
-/**
- * Passe au défi suivant et au joueur suivant
- */
 function nextChallenge() {
     gameState.currentPlayerIndex++;
 
-    // Vérifie si c'est la fin d'un tour
     if (gameState.currentPlayerIndex >= gameState.shuffledPlayers.length) {
         gameState.roundsCompleted++;
         showScreen('roundEndScreen');
@@ -279,58 +298,30 @@ function nextChallenge() {
     updateGameDisplay();
 }
 
-/**
- * Recommence avec le même ordre de joueurs
- */
 function restartWithSameOrder() {
     gameState.currentPlayerIndex = 0;
-    gameState.roundsCompleted = 0;
     showScreen('gameScreen');
     updateGameDisplay();
 }
 
-/**
- * Remélange la liste des joueurs et recommence
- */
 function reshufflePlayers() {
     gameState.shuffledPlayers = shuffleArray([...gameState.players]);
     gameState.currentPlayerIndex = 0;
-    gameState.roundsCompleted = 0;
     showScreen('gameScreen');
     updateGameDisplay();
 }
 
-/**
- * Réinitialise le jeu complètement
- */
 function resetGame() {
-    gameState = {
-        difficulty: null,
-        players: [],
-        shuffledPlayers: [],
-        currentPlayerIndex: 0,
-        challenges: {
-            truths: [],
-            actions: []
-        },
-        usedIndices: {
-            truths: [],
-            actions: []
-        },
-        roundsCompleted: 0
-    };
-    document.getElementById('playerInput').value = '';
-    updatePlayersList();
-    showScreen('difficultyScreen');
+    if (confirm('Voulez-vous vraiment quitter la partie ?')) {
+        gameState.difficulty = null;
+        gameState.players = [];
+        gameState.challenges = { truths: [], actions: [] };
+        updatePlayersList();
+        showScreen('difficultyScreen');
+    }
 }
 
-// ============================================
-// INITIALISATION
-// ============================================
-
-/**
- * Initialise l'application au chargement
- */
-document.addEventListener('DOMContentLoaded', function() {
+// Initialisation
+document.addEventListener('DOMContentLoaded', () => {
     showScreen('difficultyScreen');
 });

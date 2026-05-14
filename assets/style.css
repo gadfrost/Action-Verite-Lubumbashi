@@ -1,6 +1,8 @@
 /* ============================================
-   VARIABLES ET COULEURS
+   IMPORTS ET VARIABLES
    ============================================ */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Montserrat:wght@400;600;700&display=swap');
+
 :root {
     --primary-color: #6366f1;
     --primary-dark: #4f46e5;
@@ -16,16 +18,17 @@
     --extreme-color: #7c3aed;
     
     --bg-primary: #0f172a;
-    --bg-secondary: #1e293b;
-    --bg-tertiary: #334155;
+    --bg-secondary: rgba(30, 41, 59, 0.7);
+    --bg-tertiary: rgba(51, 65, 85, 0.5);
     --text-primary: #f1f5f9;
     --text-secondary: #cbd5e1;
     --text-muted: #94a3b8;
-    --border-color: #475569;
+    --border-color: rgba(71, 85, 105, 0.3);
     
     --shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
     --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
-    --transition: all 0.3s ease;
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --glass-blur: 20px;
 }
 
 /* ============================================
@@ -40,14 +43,29 @@
 html, body {
     width: 100%;
     height: 100%;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Poppins', sans-serif;
     background-color: var(--bg-primary);
     color: var(--text-primary);
     line-height: 1.6;
+    overflow-x: hidden;
 }
 
 body {
-    overflow-x: hidden;
+    background: linear-gradient(135deg, #0f172a 0%, #1a1f3a 50%, #16213e 100%);
+    position: relative;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
 }
 
 /* ============================================
@@ -60,7 +78,8 @@ body {
     align-items: center;
     justify-content: center;
     padding: 20px;
-    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    position: relative;
+    z-index: 1;
 }
 
 /* ============================================
@@ -70,17 +89,28 @@ body {
     display: none;
     width: 100%;
     max-width: 600px;
-    animation: slideIn 0.5s ease-out;
+    animation: fadeInScale 0.5s var(--transition);
 }
 
 .screen.active {
     display: block;
 }
 
-@keyframes slideIn {
+@keyframes fadeInScale {
     from {
         opacity: 0;
-        transform: translateY(20px);
+        transform: scale(0.95) translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+@keyframes slideInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
     }
     to {
         opacity: 1;
@@ -92,13 +122,16 @@ body {
    TITRES ET TEXTES
    ============================================ */
 h1 {
-    font-size: 2.5rem;
+    font-size: 2.8rem;
     margin-bottom: 10px;
     text-align: center;
     background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    font-weight: 800;
+    letter-spacing: -1px;
+    animation: slideInDown 0.6s var(--transition);
 }
 
 h2 {
@@ -106,12 +139,15 @@ h2 {
     margin-bottom: 15px;
     text-align: center;
     color: var(--text-primary);
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
 }
 
 h3 {
     font-size: 1.2rem;
     margin-bottom: 15px;
     color: var(--text-secondary);
+    font-weight: 600;
 }
 
 .subtitle {
@@ -119,14 +155,28 @@ h3 {
     color: var(--text-secondary);
     margin-bottom: 30px;
     font-size: 1.1rem;
+    font-weight: 300;
+    letter-spacing: 0.5px;
 }
 
 .label {
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     color: var(--text-muted);
     text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 5px;
+    letter-spacing: 1.5px;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+/* ============================================
+   GLASSMORPHISM EFFECT
+   ============================================ */
+.glass {
+    background: rgba(30, 41, 59, 0.6);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid rgba(148, 163, 184, 0.1);
+    border-radius: 16px;
 }
 
 /* ============================================
@@ -135,48 +185,86 @@ h3 {
 .btn {
     padding: 12px 24px;
     border: none;
-    border-radius: 8px;
+    border-radius: 12px;
     font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
     transition: var(--transition);
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    box-shadow: var(--shadow-sm);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    font-family: 'Poppins', sans-serif;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.1);
+    transition: left 0.3s ease;
+    z-index: -1;
+}
+
+.btn:hover::before {
+    left: 100%;
 }
 
 .btn:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
 }
 
 .btn:active {
-    transform: translateY(0);
+    transform: translateY(-1px);
 }
 
 .btn-primary {
-    background-color: var(--primary-color);
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
     color: white;
 }
 
 .btn-primary:hover {
-    background-color: var(--primary-dark);
+    background: linear-gradient(135deg, var(--primary-dark), #3f3ac0);
 }
 
 .btn-primary:disabled {
-    background-color: var(--text-muted);
+    background: linear-gradient(135deg, var(--text-muted), #64748b);
     cursor: not-allowed;
-    opacity: 0.5;
+    opacity: 0.6;
+    transform: none;
 }
 
 .btn-secondary {
-    background-color: var(--bg-tertiary);
+    background: rgba(71, 85, 105, 0.3);
     color: var(--text-primary);
-    border: 2px solid var(--border-color);
+    border: 2px solid rgba(148, 163, 184, 0.3);
+    backdrop-filter: blur(10px);
 }
 
 .btn-secondary:hover {
-    background-color: var(--border-color);
+    background: rgba(71, 85, 105, 0.5);
+    border-color: rgba(148, 163, 184, 0.5);
+}
+
+.btn-install {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    margin-bottom: 20px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 0.95rem;
+}
+
+.btn-install:hover {
+    background: linear-gradient(135deg, #059669, #047857);
 }
 
 /* ============================================
@@ -189,55 +277,68 @@ h3 {
     margin-bottom: 30px;
 }
 
+.btn-soft, .btn-medium, .btn-hard, .btn-extreme {
+    border-radius: 16px;
+    padding: 20px 15px;
+    min-height: 120px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
 .btn-soft {
     background: linear-gradient(135deg, var(--soft-color), #65a30d);
     color: #000;
-    font-weight: 700;
 }
 
 .btn-soft:hover {
     background: linear-gradient(135deg, #a3e635, #84cc16);
+    box-shadow: 0 12px 40px rgba(132, 204, 22, 0.3);
 }
 
 .btn-medium {
     background: linear-gradient(135deg, var(--medium-color), #ea580c);
     color: white;
-    font-weight: 700;
 }
 
 .btn-medium:hover {
     background: linear-gradient(135deg, #fb923c, #f97316);
+    box-shadow: 0 12px 40px rgba(249, 115, 22, 0.3);
 }
 
 .btn-hard {
     background: linear-gradient(135deg, var(--hard-color), #dc2626);
     color: white;
-    font-weight: 700;
 }
 
 .btn-hard:hover {
     background: linear-gradient(135deg, #f87171, #ef4444);
+    box-shadow: 0 12px 40px rgba(239, 68, 68, 0.3);
 }
 
 .btn-extreme {
     background: linear-gradient(135deg, var(--extreme-color), #6d28d9);
     color: white;
-    font-weight: 700;
 }
 
 .btn-extreme:hover {
     background: linear-gradient(135deg, #a78bfa, #7c3aed);
+    box-shadow: 0 12px 40px rgba(124, 58, 237, 0.3);
 }
 
 .difficulty-icon {
     display: block;
-    font-size: 2rem;
+    font-size: 2.5rem;
     margin-bottom: 10px;
 }
 
 .difficulty-name {
     display: block;
     font-size: 1.1rem;
+    font-weight: 700;
 }
 
 /* ============================================
@@ -256,31 +357,38 @@ h3 {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    border-radius: 12px;
+    border-radius: 16px;
     font-size: 1.1rem;
-    min-height: 150px;
+    min-height: 160px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
 }
 
 .btn-truth {
-    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.8), rgba(29, 78, 216, 0.8));
     color: white;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(148, 163, 184, 0.2);
 }
 
 .btn-truth:hover {
-    background: linear-gradient(135deg, #60a5fa, #3b82f6);
+    background: linear-gradient(135deg, rgba(96, 165, 250, 0.9), rgba(59, 130, 246, 0.9));
+    box-shadow: 0 12px 40px rgba(59, 130, 246, 0.3);
 }
 
 .btn-action {
-    background: linear-gradient(135deg, #ec4899, #be185d);
+    background: linear-gradient(135deg, rgba(236, 72, 153, 0.8), rgba(190, 24, 93, 0.8));
     color: white;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(148, 163, 184, 0.2);
 }
 
 .btn-action:hover {
-    background: linear-gradient(135deg, #f472b6, #ec4899);
+    background: linear-gradient(135deg, rgba(244, 114, 182, 0.9), rgba(236, 72, 153, 0.9));
+    box-shadow: 0 12px 40px rgba(236, 72, 153, 0.3);
 }
 
 .choice-icon {
-    font-size: 2.5rem;
+    font-size: 2.8rem;
     margin-bottom: 10px;
 }
 
@@ -300,27 +408,36 @@ h3 {
 
 #playerInput {
     flex: 1;
-    padding: 12px 16px;
-    border: 2px solid var(--border-color);
-    border-radius: 8px;
-    background-color: var(--bg-secondary);
+    padding: 14px 18px;
+    border: 2px solid rgba(148, 163, 184, 0.2);
+    border-radius: 12px;
+    background: rgba(30, 41, 59, 0.6);
+    backdrop-filter: blur(10px);
     color: var(--text-primary);
     font-size: 1rem;
     transition: var(--transition);
+    font-family: 'Poppins', sans-serif;
+}
+
+#playerInput::placeholder {
+    color: var(--text-muted);
 }
 
 #playerInput:focus {
     outline: none;
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    background: rgba(30, 41, 59, 0.8);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
 }
 
 .players-list {
-    background-color: var(--bg-secondary);
-    border-radius: 8px;
+    background: rgba(30, 41, 59, 0.6);
+    backdrop-filter: blur(20px);
+    border-radius: 16px;
     padding: 20px;
     margin-bottom: 30px;
-    border: 1px solid var(--border-color);
+    border: 1px solid rgba(148, 163, 184, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
 
 #playersList {
@@ -329,30 +446,52 @@ h3 {
     overflow-y: auto;
 }
 
+#playersList::-webkit-scrollbar {
+    width: 6px;
+}
+
+#playersList::-webkit-scrollbar-track {
+    background: rgba(71, 85, 105, 0.2);
+    border-radius: 10px;
+}
+
+#playersList::-webkit-scrollbar-thumb {
+    background: rgba(99, 102, 241, 0.4);
+    border-radius: 10px;
+}
+
+#playersList::-webkit-scrollbar-thumb:hover {
+    background: rgba(99, 102, 241, 0.6);
+}
+
 #playersList li {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 12px;
-    background-color: var(--bg-tertiary);
-    border-radius: 6px;
+    padding: 12px 14px;
+    background: rgba(51, 65, 85, 0.5);
+    border-radius: 10px;
     margin-bottom: 8px;
     color: var(--text-primary);
+    border: 1px solid rgba(148, 163, 184, 0.1);
+    animation: slideInDown 0.3s var(--transition);
 }
 
 #playersList li button {
-    background-color: var(--danger-color);
+    background: linear-gradient(135deg, var(--danger-color), #dc2626);
     color: white;
     border: none;
     padding: 6px 12px;
-    border-radius: 4px;
+    border-radius: 8px;
     cursor: pointer;
     font-size: 0.85rem;
+    font-weight: 600;
     transition: var(--transition);
 }
 
 #playersList li button:hover {
-    background-color: #dc2626;
+    background: linear-gradient(135deg, #f87171, #ef4444);
+    transform: translateY(-2px);
 }
 
 /* ============================================
@@ -366,48 +505,69 @@ h3 {
 }
 
 .current-player, .next-player {
-    background-color: var(--bg-secondary);
-    border-radius: 8px;
-    padding: 20px;
-    border: 2px solid var(--primary-color);
+    background: rgba(30, 41, 59, 0.6);
+    backdrop-filter: blur(20px);
+    border-radius: 16px;
+    padding: 25px;
+    border: 2px solid rgba(99, 102, 241, 0.3);
     text-align: center;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    transition: var(--transition);
+}
+
+.current-player {
+    border-color: var(--primary-color);
+    background: rgba(99, 102, 241, 0.1);
+}
+
+.current-player:hover {
+    box-shadow: 0 12px 40px rgba(99, 102, 241, 0.2);
+    transform: translateY(-2px);
 }
 
 .next-player {
-    border-color: var(--border-color);
+    border-color: rgba(148, 163, 184, 0.2);
 }
 
 .current-player h2 {
     color: var(--primary-color);
-    font-size: 1.8rem;
+    font-size: 2rem;
     animation: pulse 2s infinite;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 800;
 }
 
 @keyframes pulse {
     0%, 100% {
         opacity: 1;
+        transform: scale(1);
     }
     50% {
-        opacity: 0.7;
+        opacity: 0.8;
+        transform: scale(1.02);
     }
 }
 
 .next-player p {
-    font-size: 1.3rem;
+    font-size: 1.4rem;
     color: var(--text-secondary);
+    font-weight: 600;
+    font-family: 'Montserrat', sans-serif;
 }
 
 /* ============================================
    AFFICHAGE DU DÉFI
    ============================================ */
 .challenge-display {
-    background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
-    border-radius: 12px;
+    background: rgba(30, 41, 59, 0.7);
+    backdrop-filter: blur(20px);
+    border-radius: 16px;
     padding: 40px 30px;
     margin-bottom: 30px;
-    border: 2px solid var(--primary-color);
+    border: 2px solid rgba(99, 102, 241, 0.3);
     text-align: center;
-    animation: slideIn 0.5s ease-out;
+    animation: fadeInScale 0.5s var(--transition);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
 }
 
 .challenge-display.hidden {
@@ -418,12 +578,13 @@ h3 {
     font-size: 0.9rem;
     color: var(--text-muted);
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 1.5px;
     margin-bottom: 15px;
+    font-weight: 600;
 }
 
 .challenge-text {
-    font-size: 1.5rem;
+    font-size: 1.6rem;
     font-weight: 600;
     color: var(--text-primary);
     line-height: 1.8;
@@ -432,6 +593,7 @@ h3 {
     display: flex;
     align-items: center;
     justify-content: center;
+    font-family: 'Poppins', sans-serif;
 }
 
 /* ============================================
@@ -445,11 +607,13 @@ h3 {
 }
 
 .game-content {
-    background-color: var(--bg-secondary);
-    border-radius: 12px;
+    background: rgba(30, 41, 59, 0.6);
+    backdrop-filter: blur(20px);
+    border-radius: 16px;
     padding: 30px;
-    border: 1px solid var(--border-color);
+    border: 1px solid rgba(148, 163, 184, 0.1);
     margin-bottom: 30px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
 
 .game-footer {
@@ -457,11 +621,33 @@ h3 {
 }
 
 /* ============================================
+   ROUND END SCREEN
+   ============================================ */
+#roundEndScreen {
+    text-align: center;
+}
+
+#roundEndScreen h2 {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+#roundEndScreen p {
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+    margin-bottom: 30px;
+}
+
+/* ============================================
    RESPONSIVE DESIGN
    ============================================ */
 @media (max-width: 768px) {
     h1 {
-        font-size: 2rem;
+        font-size: 2.2rem;
     }
 
     h2 {
@@ -473,12 +659,17 @@ h3 {
         gap: 12px;
     }
 
+    .btn-soft, .btn-medium, .btn-hard, .btn-extreme {
+        min-height: 100px;
+        padding: 15px 10px;
+    }
+
     .game-header {
         grid-template-columns: 1fr;
     }
 
     .challenge-text {
-        font-size: 1.2rem;
+        font-size: 1.3rem;
     }
 
     .btn {
@@ -491,46 +682,42 @@ h3 {
     }
 
     .btn-choice {
-        min-height: 120px;
+        min-height: 130px;
         padding: 20px 15px;
     }
 
     .choice-icon {
-        font-size: 2rem;
+        font-size: 2.2rem;
     }
 
-    .choice-text {
-        font-size: 1rem;
+    .current-player h2 {
+        font-size: 1.6rem;
     }
 
-    .players-input-section {
-        flex-direction: column;
+    .next-player p {
+        font-size: 1.1rem;
     }
 
-    .action-buttons {
-        flex-direction: column;
+    .container {
+        padding: 15px;
     }
 
-    .action-buttons .btn {
-        width: 100%;
+    .game-content {
+        padding: 20px;
+    }
+
+    .challenge-display {
+        padding: 30px 20px;
     }
 }
 
 @media (max-width: 480px) {
-    .container {
-        padding: 10px;
-    }
-
     h1 {
-        font-size: 1.5rem;
+        font-size: 1.8rem;
     }
 
-    h2 {
-        font-size: 1.2rem;
-    }
-
-    .subtitle {
-        font-size: 1rem;
+    .difficulty-buttons {
+        grid-template-columns: 1fr;
     }
 
     .game-header {
@@ -541,85 +728,21 @@ h3 {
         padding: 15px;
     }
 
-    .current-player h2 {
-        font-size: 1.4rem;
-    }
-
-    .challenge-display {
-        padding: 25px 20px;
-    }
-
     .challenge-text {
-        font-size: 1rem;
+        font-size: 1.1rem;
         min-height: 80px;
     }
 
-    .btn {
-        padding: 10px 16px;
-        font-size: 0.9rem;
-    }
-
-    .difficulty-icon {
-        font-size: 1.5rem;
-        margin-bottom: 5px;
-    }
-
-    .difficulty-name {
-        font-size: 0.95rem;
+    .btn-choice {
+        min-height: 110px;
+        padding: 15px 10px;
     }
 
     .choice-icon {
-        font-size: 1.5rem;
+        font-size: 2rem;
     }
 
-    .choice-text {
-        font-size: 0.9rem;
+    .difficulty-icon {
+        font-size: 2rem;
     }
-}
-
-/* ============================================
-   SCROLLBAR PERSONNALISÉE
-   ============================================ */
-::-webkit-scrollbar {
-    width: 8px;
-}
-
-::-webkit-scrollbar-track {
-    background: var(--bg-secondary);
-}
-
-::-webkit-scrollbar-thumb {
-    background: var(--primary-color);
-    border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: var(--primary-dark);
-}
-
-/* ============================================
-   ANIMATIONS SUPPLÉMENTAIRES
-   ============================================ */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
-}
-
-@keyframes scaleIn {
-    from {
-        transform: scale(0.95);
-        opacity: 0;
-    }
-    to {
-        transform: scale(1);
-        opacity: 1;
-    }
-}
-
-.challenge-display {
-    animation: scaleIn 0.4s ease-out;
 }

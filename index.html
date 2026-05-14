@@ -3,15 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Action ou Vérité - Jeu Lubumbashi</title>
+    <title>Action ou Vérité - Moderne</title>
     <link rel="stylesheet" href="assets/style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#6366f1">
+    <link rel="apple-touch-icon" href="assets/icon-192.png">
 </head>
 <body>
     <div class="container">
         <!-- Écran de sélection de difficulté -->
         <div id="difficultyScreen" class="screen active">
             <h1>Action ou Vérité</h1>
-            <p class="subtitle">Choisissez votre niveau de difficulté</p>
+            <p class="subtitle">Choisissez votre niveau de défi</p>
+            
+            <button id="installBtn" class="btn btn-install" style="display: none;">
+                <span>📲</span> Installer l'application
+            </button>
+
             <div class="difficulty-buttons">
                 <button class="btn btn-soft" onclick="selectDifficulty('soft')">
                     <span class="difficulty-icon">🌱</span>
@@ -34,37 +42,37 @@
 
         <!-- Écran d'ajout de joueurs -->
         <div id="playersScreen" class="screen">
-            <h1>Ajouter les joueurs</h1>
+            <h2>Les Joueurs</h2>
             <div class="players-input-section">
-                <input type="text" id="playerInput" placeholder="Entrez le nom du joueur" onkeypress="handlePlayerKeyPress(event)">
+                <input type="text" id="playerInput" placeholder="Nom du joueur..." onkeypress="handlePlayerKeyPress(event)">
                 <button class="btn btn-primary" onclick="addPlayer()">Ajouter</button>
             </div>
             
-            <div class="players-list">
+            <div class="players-list glass">
                 <h3>Joueurs (<span id="playersCount">0</span>)</h3>
                 <ul id="playersList"></ul>
             </div>
 
             <div class="action-buttons">
                 <button class="btn btn-secondary" onclick="goBackToDifficulty()">Retour</button>
-                <button class="btn btn-primary" id="startGameBtn" onclick="startGame()" disabled>Commencer le jeu</button>
+                <button class="btn btn-primary" id="startGameBtn" onclick="startGame()" disabled>Commencer</button>
             </div>
         </div>
 
         <!-- Écran principal du jeu -->
         <div id="gameScreen" class="screen">
             <div class="game-header">
-                <div class="current-player">
-                    <p class="label">Joueur actuel</p>
+                <div class="current-player glass">
+                    <p class="label">C'est à toi</p>
                     <h2 id="currentPlayerName"></h2>
                 </div>
-                <div class="next-player">
-                    <p class="label">Prochain</p>
+                <div class="next-player glass">
+                    <p class="label">Ensuite</p>
                     <p id="nextPlayerName"></p>
                 </div>
             </div>
 
-            <div class="game-content">
+            <div class="game-content glass">
                 <div class="challenge-section">
                     <div class="choice-buttons">
                         <button class="btn btn-choice btn-truth" onclick="selectChallenge('truth')">
@@ -80,23 +88,25 @@
                     <div id="challengeDisplay" class="challenge-display hidden">
                         <div class="challenge-type" id="challengeType"></div>
                         <div class="challenge-text" id="challengeText"></div>
-                        <button class="btn btn-primary" onclick="nextChallenge()">Défi suivant</button>
+                        <button class="btn btn-primary" onclick="nextChallenge()">Suivant</button>
                     </div>
                 </div>
             </div>
 
             <div class="game-footer">
-                <button class="btn btn-secondary" onclick="resetGame()">Recommencer</button>
+                <button class="btn btn-secondary" onclick="resetGame()">Quitter</button>
             </div>
         </div>
 
         <!-- Écran de fin de tour -->
         <div id="roundEndScreen" class="screen">
-            <h2>Fin de tour !</h2>
-            <p>Tout le monde a joué une fois.</p>
-            <div class="action-buttons">
-                <button class="btn btn-primary" onclick="restartWithSameOrder()">Recommencer avec le même ordre</button>
-                <button class="btn btn-secondary" onclick="reshufflePlayers()">Remélanger la liste</button>
+            <div class="glass" style="padding: 40px; border-radius: 24px; text-align: center;">
+                <h2>Fin de tour !</h2>
+                <p>Tout le monde a relevé un défi.</p>
+                <div class="action-buttons">
+                    <button class="btn btn-primary" onclick="restartWithSameOrder()">Continuer</button>
+                    <button class="btn btn-secondary" onclick="reshufflePlayers()">Mélanger</button>
+                </div>
             </div>
         </div>
     </div>
