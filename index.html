@@ -2,119 +2,188 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Action ou Vérité - Moderne</title>
-    <link rel="stylesheet" href="assets/style.css">
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#6366f1">
-    <link rel="apple-touch-icon" href="assets/icon-192.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Action ou Vérité - Lubumbashi</title>
+    
+    <style>
+        :root {
+            --primary: #6366f1;
+            --bg-dark: #0f172a;
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text: #f8fafc;
+        }
+
+        /* Reset et Base */
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, sans-serif; }
+        
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+            overflow-x: hidden;
+        }
+
+        /* Conteneur principal Responsive */
+        .container {
+            width: 100%;
+            max-width: 500px; /* Largeur max pour PC */
+            min-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* Effet de Verre (Glassmorphism) */
+        .glass {
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Gestion des écrans */
+        .screen { display: none; flex-direction: column; gap: 20px; width: 100%; }
+        .screen.active { display: flex; animation: fadeIn 0.4s ease; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Typographie */
+        h1 { font-size: 2rem; text-align: center; margin-bottom: 5px; color: var(--primary); }
+        .subtitle { text-align: center; opacity: 0.7; margin-bottom: 20px; }
+
+        /* Boutons de difficulté - Grille Responsive */
+        .difficulty-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* 2 colonnes sur mobile */
+            gap: 15px;
+        }
+
+        @media (min-width: 768px) {
+            .difficulty-buttons { grid-template-columns: 1fr 1fr; } /* Garde 2x2 pour le style */
+        }
+
+        .btn {
+            border: none;
+            border-radius: 16px;
+            padding: 15px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            color: white;
+        }
+
+        .btn:active { transform: scale(0.95); }
+
+        .btn-soft { background: #22c55e; }
+        .btn-medium { background: #f59e0b; }
+        .btn-hard { background: #ef4444; }
+        .btn-extreme { background: #7c3aed; }
+
+        /* Interface de jeu */
+        .game-header { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .current-player { border-top: 4px solid var(--primary); text-align: center; }
+        .next-player { opacity: 0.6; text-align: center; font-size: 0.9rem; }
+
+        .choice-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .btn-choice { padding: 30px 10px; background: var(--glass); border: 1px solid var(--glass-border); }
+        .btn-choice:hover { background: rgba(255,255,255,0.1); }
+
+        /* Liste des joueurs */
+        .players-input-section { display: flex; gap: 10px; }
+        input[type="text"] {
+            flex: 1;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            padding: 12px;
+            border-radius: 12px;
+            color: white;
+        }
+
+        .players-list { max-height: 200px; overflow-y: auto; margin-top: 10px; }
+        ul { list-style: none; }
+        li { padding: 10px; border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; }
+
+        /* Utilitaires */
+        .hidden { display: none; }
+        .theme-toggle { position: absolute; top: -50px; right: 0; }
+        .btn-primary { background: var(--primary); width: 100%; padding: 15px; margin-top: 10px; }
+    </style>
 </head>
 <body>
-    <!-- Commutateur de thème -->
-    <div class="theme-toggle">
-        <button id="themeBtn" class="btn-theme" title="Changer de mode">
-            <span id="themeIcon">🌙</span>
-        </button>
-    </div>
 
     <div class="container">
         <!-- Écran de sélection de difficulté -->
         <div id="difficultyScreen" class="screen active">
             <h1>Action ou Vérité</h1>
-            <p class="subtitle">Choisissez votre niveau de défi</p>
+            <p class="subtitle">Sélectionnez un niveau</p>
             
-            <!-- Bouton d'installation amélioré -->
-            <button id="installBtn" class="btn btn-install" style="display: none;">
-                <span>📥</span> Télécharger l'application
-            </button>
-
             <div class="difficulty-buttons">
                 <button class="btn btn-soft" onclick="selectDifficulty('soft')">
-                    <span class="difficulty-icon">🌱</span>
-                    <span class="difficulty-name">Soft</span>
+                    <span>🌱</span> Soft
                 </button>
                 <button class="btn btn-medium" onclick="selectDifficulty('medium')">
-                    <span class="difficulty-icon">🔥</span>
-                    <span class="difficulty-name">Medium</span>
+                    <span>🔥</span> Medium
                 </button>
                 <button class="btn btn-hard" onclick="selectDifficulty('hard')">
-                    <span class="difficulty-icon">⚡</span>
-                    <span class="difficulty-name">Hard</span>
+                    <span>⚡</span> Hard
                 </button>
                 <button class="btn btn-extreme" onclick="selectDifficulty('extreme')">
-                    <span class="difficulty-icon">💀</span>
-                    <span class="difficulty-name">Extreme</span>
+                    <span>💀</span> Extreme
                 </button>
             </div>
         </div>
 
         <!-- Écran d'ajout de joueurs -->
         <div id="playersScreen" class="screen">
-            <h2>Les Joueurs</h2>
-            <div class="players-input-section">
-                <input type="text" id="playerInput" placeholder="Nom du joueur..." onkeypress="handlePlayerKeyPress(event)">
-                <button class="btn btn-primary" onclick="addPlayer()">Ajouter</button>
+            <div class="glass">
+                <h2>Les Joueurs</h2>
+                <div class="players-input-section">
+                    <input type="text" id="playerInput" placeholder="Nom...">
+                    <button class="btn btn-primary" style="width: auto; margin:0;" onclick="addPlayer()">OK</button>
+                </div>
+                <div class="players-list">
+                    <ul id="playersList"></ul>
+                </div>
             </div>
-            
-            <div class="players-list glass">
-                <h3>Joueurs (<span id="playersCount">0</span>)</h3>
-                <ul id="playersList"></ul>
-            </div>
-
-            <div class="action-buttons">
-                <button class="btn btn-secondary" onclick="goBackToDifficulty()">Retour</button>
-                <button class="btn btn-primary" id="startGameBtn" onclick="startGame()" disabled>Commencer</button>
-            </div>
+            <button class="btn btn-primary" id="startGameBtn" onclick="startGame()" disabled>Commencer la partie</button>
+            <button class="btn" style="background: transparent;" onclick="goBackToDifficulty()">Retour</button>
         </div>
 
         <!-- Écran principal du jeu -->
         <div id="gameScreen" class="screen">
             <div class="game-header">
-                <div class="current-player glass">
-                    <p class="label">C'est à toi</p>
-                    <h2 id="currentPlayerName"></h2>
+                <div class="glass current-player">
+                    <p style="font-size: 0.8rem; opacity: 0.7;">C'est à</p>
+                    <h2 id="currentPlayerName" style="color: var(--primary);">---</h2>
                 </div>
-                <div class="next-player glass">
-                    <p class="label">Ensuite</p>
-                    <p id="nextPlayerName"></p>
-                </div>
-            </div>
-
-            <div class="game-content glass">
-                <div class="challenge-section">
-                    <div class="choice-buttons">
-                        <button class="btn btn-choice btn-truth" onclick="selectChallenge('truth')">
-                            <span class="choice-icon">🤔</span>
-                            <span class="choice-text">Vérité</span>
-                        </button>
-                        <button class="btn btn-choice btn-action" onclick="selectChallenge('action')">
-                            <span class="choice-icon">🎬</span>
-                            <span class="choice-text">Action</span>
-                        </button>
-                    </div>
-
-                    <div id="challengeDisplay" class="challenge-display glass hidden">
-                        <div class="challenge-type" id="challengeType"></div>
-                        <div class="challenge-text" id="challengeText"></div>
-                        <button class="btn btn-primary" onclick="nextChallenge()">Suivant</button>
-                    </div>
+                <div class="glass next-player">
+                    <p style="font-size: 0.7rem;">Suivant</p>
+                    <p id="nextPlayerName">---</p>
                 </div>
             </div>
 
-            <div class="game-footer">
-                <button class="btn btn-secondary" onclick="resetGame()">Quitter</button>
+            <div class="choice-buttons" id="choiceButtons">
+                <button class="btn btn-choice" onclick="selectChallenge('truth')">🤔 Vérité</button>
+                <button class="btn btn-choice" onclick="selectChallenge('action')">🎬 Action</button>
             </div>
-        </div>
 
-        <!-- Écran de fin de tour -->
-        <div id="roundEndScreen" class="screen">
-            <div class="glass" style="padding: 40px; border-radius: 24px; text-align: center;">
-                <h2>Fin de tour !</h2>
-                <p>Tout le monde a relevé un défi.</p>
-                <div class="action-buttons">
-                    <button class="btn btn-primary" onclick="restartWithSameOrder()">Continuer</button>
-                    <button class="btn btn-secondary" onclick="reshufflePlayers()">Mélanger</button>
-                </div>
+            <div id="challengeDisplay" class="glass hidden" style="text-align: center; min-height: 150px; display: flex; flex-direction: column; justify-content: center; gap: 20px;">
+                <div id="challengeType" style="font-weight: bold; color: var(--primary); text-transform: uppercase;"></div>
+                <div id="challengeText" style="font-size: 1.1rem; line-height: 1.5;"></div>
+                <button class="btn btn-primary" onclick="nextChallenge()">Défi relevé !</button>
             </div>
         </div>
     </div>
