@@ -111,6 +111,7 @@ function removePlayer(index) {
  */
 function updatePlayersList() {
     const playersList = document.getElementById('playersList');
+    const playersCount = document.getElementById('playersCount');
     playersList.innerHTML = '';
 
     gameState.players.forEach((player, index) => {
@@ -121,6 +122,10 @@ function updatePlayersList() {
         `;
         playersList.appendChild(li);
     });
+
+    if (playersCount) {
+        playersCount.textContent = gameState.players.length;
+    }
 }
 
 /**
