@@ -59,12 +59,18 @@ if ('serviceWorker' in navigator) {
 }
 
 window.addEventListener('beforeinstallprompt', (e) => {
+    // Empêche Chrome d'afficher le prompt automatique
     e.preventDefault();
+    // Stocke l'événement pour plus tard
     deferredPrompt = e;
-    const installBtn = document.getElementById('installBtn');
-    if (installBtn) {
-        installBtn.style.display = 'flex';
-    }
+    // Affiche le bouton d'installation avec un petit délai pour s'assurer que le DOM est prêt
+    setTimeout(() => {
+        const installBtn = document.getElementById('installBtn');
+        if (installBtn) {
+            installBtn.style.display = 'flex';
+            console.log('Bouton d\'installation affiché');
+        }
+    }, 500);
 });
 
 document.getElementById('installBtn')?.addEventListener('click', async () => {
