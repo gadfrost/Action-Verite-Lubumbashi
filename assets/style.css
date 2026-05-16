@@ -102,6 +102,76 @@ body::before {
 }
 
 /* ============================================
+   ÉCRAN DE DIFFICULTÉ - LAYOUT OPTIMISÉ
+   ============================================ */
+.difficulty-screen {
+    display: flex !important;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 90vh;
+    width: 100%;
+    max-width: 600px;
+}
+
+.difficulty-header {
+    flex-shrink: 0;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.difficulty-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin: 2rem 0;
+    width: 100%;
+    flex: 1;
+    align-content: center;
+}
+
+.btn-soft, .btn-medium, .btn-hard, .btn-extreme {
+    border-radius: 16px;
+    padding: 20px 16px;
+    min-height: 130px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    transition: var(--transition);
+    box-shadow: 0 4px 15px var(--shadow-color);
+}
+
+.btn-soft { background: linear-gradient(135deg, var(--soft-color), #65a30d); color: #000; }
+.btn-medium { background: linear-gradient(135deg, var(--medium-color), #ea580c); color: white; }
+.btn-hard { background: linear-gradient(135deg, var(--hard-color), #dc2626); color: white; }
+.btn-extreme { background: linear-gradient(135deg, var(--extreme-color), #6d28d9); color: white; }
+
+.btn-soft:hover, .btn-medium:hover, .btn-hard:hover, .btn-extreme:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px var(--shadow-color);
+}
+
+.difficulty-icon { font-size: 2.5rem; margin-bottom: 10px; }
+.difficulty-name { font-size: 1.1rem; font-weight: 700; }
+
+.difficulty-footer {
+    flex-shrink: 0;
+    padding: 15px 20px;
+    text-align: center;
+    margin-top: 1rem;
+    border-radius: 12px;
+}
+
+.footer-text {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+/* ============================================
    COMMUTATEUR DE THÈME
    ============================================ */
 .theme-toggle {
@@ -135,6 +205,10 @@ body::before {
 .btn-theme:hover {
     transform: rotate(30deg) scale(1.1);
     background: var(--bg-glass-hover);
+}
+
+.btn-theme:active {
+    transform: rotate(30deg) scale(0.95);
 }
 
 /* ============================================
@@ -233,6 +307,7 @@ h3 {
     border: 1px solid var(--border-color);
     border-radius: 16px;
     transition: background-color 0.3s ease, border-color 0.3s ease;
+    padding: 20px;
 }
 
 /* ============================================
@@ -267,6 +342,9 @@ h3 {
 .btn-primary {
     background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
     color: white;
+    width: 100%;
+    padding: 15px;
+    margin-top: 10px;
 }
 
 .btn-primary:disabled {
@@ -280,6 +358,9 @@ h3 {
     background: var(--bg-item);
     color: var(--text-primary);
     border: 2px solid var(--border-color);
+    width: 100%;
+    padding: 15px;
+    margin-top: 10px;
 }
 
 .btn-secondary:hover {
@@ -300,6 +381,9 @@ h3 {
     border-radius: 14px;
     animation: pulse-green 2s infinite;
     text-transform: none;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 15px var(--shadow-color);
 }
 
 @keyframes pulse-green {
@@ -307,36 +391,6 @@ h3 {
     70% { box-shadow: 0 0 0 12px rgba(16, 185, 129, 0); }
     100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
 }
-
-/* ============================================
-   BOUTONS DE DIFFICULTÉ
-   ============================================ */
-.difficulty-buttons {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-bottom: 25px;
-    width: 100%;
-}
-
-.btn-soft, .btn-medium, .btn-hard, .btn-extreme {
-    border-radius: 14px;
-    padding: 16px 12px;
-    min-height: 110px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-}
-
-.btn-soft { background: linear-gradient(135deg, var(--soft-color), #65a30d); color: #000; }
-.btn-medium { background: linear-gradient(135deg, var(--medium-color), #ea580c); color: white; }
-.btn-hard { background: linear-gradient(135deg, var(--hard-color), #dc2626); color: white; }
-.btn-extreme { background: linear-gradient(135deg, var(--extreme-color), #6d28d9); color: white; }
-
-.difficulty-icon { font-size: 2.2rem; margin-bottom: 8px; }
-.difficulty-name { font-size: 1rem; font-weight: 700; }
 
 /* ============================================
    BOUTONS DE CHOIX (VÉRITÉ/ACTION)
@@ -358,6 +412,9 @@ h3 {
     border-radius: 14px;
     font-size: 1rem;
     min-height: 140px;
+    border: none;
+    cursor: pointer;
+    transition: var(--transition);
 }
 
 .btn-truth {
@@ -503,330 +560,44 @@ h3 {
     border-radius: 14px;
 }
 
-.challenge-display.hidden { display: none; }
-
-.challenge-type {
-    font-size: 0.85rem;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    margin-bottom: 12px;
-    font-weight: 600;
-}
-
-.challenge-text {
-    font-size: 1.4rem;
-    font-weight: 600;
-    color: var(--text-primary);
-    line-height: 1.6;
-    margin-bottom: 20px;
-    min-height: 80px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.challenge-display.hidden {
+    display: none !important;
 }
 
 /* ============================================
-   SECTIONS D'ACTIONS
+   UTILITAIRES
    ============================================ */
-.action-buttons {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-    flex-wrap: wrap;
-    width: 100%;
-}
-
-.game-content {
-    padding: 20px;
-    margin-bottom: 20px;
-    box-shadow: 0 8px 32px var(--shadow-color);
-    border-radius: 14px;
-}
-
-.game-footer {
-    text-align: center;
+.hidden {
+    display: none !important;
 }
 
 /* ============================================
-   ROUND END SCREEN
-   ============================================ */
-#roundEndScreen .glass {
-    padding: 30px 20px;
-    border-radius: 16px;
-    text-align: center;
-}
-
-#roundEndScreen h2 {
-    font-size: 1.8rem;
-    margin-bottom: 15px;
-}
-
-#roundEndScreen p {
-    font-size: 1rem;
-    color: var(--text-secondary);
-    margin-bottom: 20px;
-}
-
-/* ============================================
-   RESPONSIVE DESIGN - TABLETTE
-   ============================================ */
-@media (max-width: 768px) {
-    .container {
-        padding: 15px;
-    }
-
-    h1 { 
-        font-size: 2rem;
-        margin-bottom: 12px;
-    }
-
-    h2 { 
-        font-size: 1.5rem;
-        margin-bottom: 15px;
-    }
-
-    .subtitle {
-        margin-bottom: 20px;
-        font-size: 0.95rem;
-    }
-
-    .difficulty-buttons { 
-        grid-template-columns: 1fr;
-        gap: 10px;
-        margin-bottom: 20px;
-    }
-
-    .btn-soft, .btn-medium, .btn-hard, .btn-extreme {
-        min-height: 100px;
-        padding: 14px 10px;
-    }
-
-    .difficulty-icon { font-size: 2rem; }
-    .difficulty-name { font-size: 0.95rem; }
-
-    .game-header { 
-        grid-template-columns: 1fr;
-        gap: 12px;
-    }
-
-    .current-player, .next-player {
-        padding: 18px;
-    }
-
-    .current-player h2 {
-        font-size: 1.4rem;
-    }
-
-    .next-player p {
-        font-size: 1.1rem;
-    }
-
-    .challenge-text { 
-        font-size: 1.2rem;
-        min-height: 70px;
-    }
-
-    .btn-choice { 
-        min-height: 120px;
-        padding: 20px 12px;
-    }
-
-    .choice-icon { font-size: 2.2rem; }
-    .choice-text { font-size: 1rem; }
-
-    .players-list {
-        max-height: 200px;
-        padding: 14px;
-    }
-
-    .game-content {
-        padding: 16px;
-    }
-
-    .challenge-display {
-        padding: 24px 16px;
-    }
-}
-
-/* ============================================
-   RESPONSIVE DESIGN - MOBILE
+   RESPONSIVE
    ============================================ */
 @media (max-width: 480px) {
     .container {
-        padding: 12px;
+        padding: 15px;
     }
 
-    .theme-toggle {
-        top: 12px;
-        right: 12px;
+    h1 {
+        font-size: 2rem;
     }
 
-    .btn-theme {
-        width: 45px;
-        height: 45px;
-        font-size: 1.1rem;
-    }
-
-    h1 { 
-        font-size: 1.7rem;
-        margin-bottom: 10px;
-    }
-
-    h2 { 
-        font-size: 1.3rem;
-        margin-bottom: 12px;
-    }
-
-    h3 {
-        font-size: 1rem;
-    }
-
-    .subtitle {
-        margin-bottom: 15px;
-        font-size: 0.9rem;
-    }
-
-    .btn-install {
-        margin-bottom: 15px;
-        padding: 12px 14px;
-        font-size: 0.9rem;
-        gap: 8px;
-    }
-
-    .difficulty-buttons { 
-        grid-template-columns: 1fr;
-        gap: 8px;
-        margin-bottom: 15px;
+    .difficulty-buttons {
+        gap: 12px;
+        margin: 1.5rem 0;
     }
 
     .btn-soft, .btn-medium, .btn-hard, .btn-extreme {
-        min-height: 90px;
-        padding: 12px 8px;
+        min-height: 120px;
+        padding: 16px 12px;
     }
 
-    .difficulty-icon { font-size: 1.8rem; }
-    .difficulty-name { font-size: 0.9rem; }
-
-    .players-input-section {
-        gap: 6px;
-        margin-bottom: 15px;
+    .difficulty-icon {
+        font-size: 2rem;
     }
 
-    #playerInput {
-        padding: 10px 12px;
-        font-size: 0.9rem;
-        border-radius: 8px;
-    }
-
-    .players-input-section .btn {
-        padding: 10px 12px;
-        font-size: 0.85rem;
-    }
-
-    .players-list {
-        padding: 12px;
-        margin-bottom: 15px;
-        max-height: 180px;
-    }
-
-    #playersList li {
-        padding: 8px 10px;
-        font-size: 0.9rem;
-    }
-
-    .game-header { 
-        grid-template-columns: 1fr;
-        gap: 10px;
-        margin-bottom: 20px;
-    }
-
-    .current-player, .next-player {
-        padding: 15px;
-        border-radius: 12px;
-    }
-
-    .current-player h2 {
-        font-size: 1.3rem;
-    }
-
-    .next-player p {
-        font-size: 1rem;
-    }
-
-    .label {
-        font-size: 0.7rem;
-    }
-
-    .choice-buttons {
-        gap: 12px;
-        margin-bottom: 20px;
-    }
-
-    .btn-choice { 
-        min-height: 110px;
-        padding: 16px 10px;
-        border-radius: 12px;
-    }
-
-    .choice-icon { font-size: 2rem; }
-    .choice-text { font-size: 0.95rem; }
-
-    .challenge-display {
-        padding: 20px 14px;
-        margin-bottom: 20px;
-        border-radius: 12px;
-    }
-
-    .challenge-type {
-        font-size: 0.8rem;
-        margin-bottom: 10px;
-    }
-
-    .challenge-text { 
-        font-size: 1.1rem;
-        min-height: 60px;
-        margin-bottom: 15px;
-    }
-
-    .game-content {
-        padding: 14px;
-        margin-bottom: 15px;
-        border-radius: 12px;
-    }
-
-    .action-buttons {
-        gap: 8px;
-    }
-
-    .btn {
-        padding: 10px 16px;
-        font-size: 0.85rem;
-        border-radius: 10px;
-    }
-
-    #roundEndScreen .glass {
-        padding: 24px 16px;
-    }
-}
-
-/* ============================================
-   RESPONSIVE DESIGN - TRÈS PETIT MOBILE
-   ============================================ */
-@media (max-width: 360px) {
-    h1 { font-size: 1.5rem; }
-    h2 { font-size: 1.2rem; }
-    
-    .btn-install {
-        font-size: 0.85rem;
-        padding: 10px 12px;
-    }
-
-    .difficulty-buttons { gap: 6px; }
-    .choice-buttons { gap: 10px; }
-
-    .btn {
-        padding: 9px 14px;
-        font-size: 0.8rem;
+    .difficulty-name {
+        font-size: 0.95rem;
     }
 }

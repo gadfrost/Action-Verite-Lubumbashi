@@ -73,13 +73,18 @@ window.addEventListener('beforeinstallprompt', (e) => {
     }, 500);
 });
 
-document.getElementById('installBtn')?.addEventListener('click', async () => {
-    if (!deferredPrompt) return;
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    console.log(`Résultat de l'installation: ${outcome}`);
-    deferredPrompt = null;
-    document.getElementById('installBtn').style.display = 'none';
+document.addEventListener('DOMContentLoaded', () => {
+    const installBtn = document.getElementById('installBtn');
+    if (installBtn) {
+        installBtn.addEventListener('click', async () => {
+            if (!deferredPrompt) return;
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            console.log(`Résultat de l'installation: ${outcome}`);
+            deferredPrompt = null;
+            installBtn.style.display = 'none';
+        });
+    }
 });
 
 window.addEventListener('appinstalled', (evt) => {
@@ -343,8 +348,7 @@ function initDownload() {
             deferredPrompt = null;
         } else {
             // Sinon, on informe l'utilisateur comment "télécharger" (installer) manuellement
-            // ou on peut essayer de forcer une mise en cache via le Service Worker
-            alert("Pour installer l'application de façon permanente :\n\nSur Android : Cliquez sur les 3 points en haut à droite puis 'Installer l'application'.\nSur iPhone : Cliquez sur l'icône de partage en bas puis 'Sur l'écran d'accueil'.");
+            alert("Pour installer l'application de façon permanente :\n\n📱 Sur Android : Cliquez sur les 3 points en haut à droite puis 'Installer l'application'.\n\n📱 Sur iPhone : Cliquez sur l'icône de partage en bas puis 'Sur l'écran d'accueil'.");
         }
     });
 }
@@ -353,5 +357,6 @@ function initDownload() {
 document.addEventListener('DOMContentLoaded', () => {
     initTheme();
     initDownload();
+    updateStartGameButton();
     showScreen('difficultyScreen');
 });
