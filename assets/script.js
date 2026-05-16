@@ -327,8 +327,31 @@ function resetGame() {
     }
 }
 
+// ============================================
+// GESTION DU TÉLÉCHARGEMENT (PWA / PERMANENT)
+// ============================================
+
+function initDownload() {
+    const downloadBtn = document.getElementById('downloadBtn');
+    
+    downloadBtn?.addEventListener('click', async () => {
+        // Si le prompt d'installation PWA est disponible, on l'utilise
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            console.log(`Résultat de l'installation: ${outcome}`);
+            deferredPrompt = null;
+        } else {
+            // Sinon, on informe l'utilisateur comment "télécharger" (installer) manuellement
+            // ou on peut essayer de forcer une mise en cache via le Service Worker
+            alert("Pour installer l'application de façon permanente :\n\nSur Android : Cliquez sur les 3 points en haut à droite puis 'Installer l'application'.\nSur iPhone : Cliquez sur l'icône de partage en bas puis 'Sur l'écran d'accueil'.");
+        }
+    });
+}
+
 // Initialisation
 document.addEventListener('DOMContentLoaded', () => {
     initTheme();
+    initDownload();
     showScreen('difficultyScreen');
 });
