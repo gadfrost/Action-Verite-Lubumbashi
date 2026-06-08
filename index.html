@@ -10,6 +10,9 @@
     <link rel="apple-touch-icon" href="assets/icon-192.png">
 </head>
 <body>
+    <!-- Arrière-plan dynamique -->
+    <div class="background-animation"></div>
+
     <!-- Boutons flottants en haut à droite -->
     <div class="theme-toggle">
         <button id="themeBtn" class="btn-theme" title="Changer de thème">
@@ -22,7 +25,7 @@
 
     <div class="container">
         <!-- Écran de sélection de difficulté -->
-        <div id="difficultyScreen" class="screen active difficulty-screen">
+        <div id="difficultyScreen" class="screen active">
             <!-- En-tête avec titre -->
             <div class="difficulty-header">
                 <h1>Action ou Vérité</h1>
@@ -36,19 +39,19 @@
 
             <!-- Grille de boutons de difficulté -->
             <div class="difficulty-buttons">
-                <button class="btn btn-soft" onclick="selectDifficulty('soft')">
+                <button class="btn btn-soft" onclick="selectDifficulty(\'soft\')">
                     <span class="difficulty-icon">🌱</span>
                     <span class="difficulty-name">Soft</span>
                 </button>
-                <button class="btn btn-medium" onclick="selectDifficulty('medium')">
+                <button class="btn btn-medium" onclick="selectDifficulty(\'medium\')">
                     <span class="difficulty-icon">🔥</span>
                     <span class="difficulty-name">Medium</span>
                 </button>
-                <button class="btn btn-hard" onclick="selectDifficulty('hard')">
+                <button class="btn btn-hard" onclick="selectDifficulty(\'hard\')">
                     <span class="difficulty-icon">⚡</span>
                     <span class="difficulty-name">Hard</span>
                 </button>
-                <button class="btn btn-extreme" onclick="selectDifficulty('extreme')">
+                <button class="btn btn-extreme" onclick="selectDifficulty(\'extreme\')">
                     <span class="difficulty-icon">💀</span>
                     <span class="difficulty-name">Extreme</span>
                 </button>
@@ -62,13 +65,13 @@
 
         <!-- Écran d'ajout de joueurs -->
         <div id="playersScreen" class="screen">
-            <div class="glass">
+            <div class="glass player-input-card">
                 <h2>Les Joueurs</h2>
                 <div class="players-input-section">
                     <input type="text" id="playerInput" placeholder="Nom..." onkeypress="handlePlayerKeyPress(event)">
                     <button class="btn btn-primary" style="width: auto; margin:0;" onclick="addPlayer()">OK</button>
                 </div>
-                <div class="players-list">
+                <div class="players-list glass">
                     <ul id="playersList"></ul>
                 </div>
             </div>
@@ -90,27 +93,42 @@
             </div>
 
             <div class="choice-buttons" id="choiceButtons">
-                <button class="btn btn-choice btn-truth" onclick="selectChallenge('truth')">
+                <button class="btn btn-choice btn-truth" onclick="selectChallenge(\'truth\')">
                     <span class="choice-icon">🤔</span>
                     <span class="choice-text">Vérité</span>
                 </button>
-                <button class="btn btn-choice btn-action" onclick="selectChallenge('action')">
+                <button class="btn btn-choice btn-action" onclick="selectChallenge(\'action\')">
                     <span class="choice-icon">🎬</span>
                     <span class="choice-text">Action</span>
                 </button>
             </div>
 
-            <div id="challengeDisplay" class="glass challenge-display hidden" style="text-align: center; min-height: 150px; display: flex; flex-direction: column; justify-content: center; gap: 20px;">
-                <div id="challengeType" style="font-weight: bold; color: var(--primary-color); text-transform: uppercase;"></div>
-                <div id="challengeText" style="font-size: 1.1rem; line-height: 1.5;"></div>
+            <div id="challengeDisplay" class="glass challenge-display hidden">
+                <div id="challengeType" class="challenge-type-text"></div>
+                <div id="challengeText" class="challenge-text-content"></div>
                 <button class="btn btn-primary" onclick="nextChallenge()">Défi relevé !</button>
+            </div>
+
+            <button class="btn btn-secondary" onclick="resetGame()">Quitter la partie</button>
+        </div>
+
+        <!-- Écran de fin de tour -->
+        <div id="roundEndScreen" class="screen">
+            <div class="glass">
+                <h2>Fin du Tour !</h2>
+                <p>Tous les joueurs ont eu leur tour.</p>
+                <p>Voulez-vous rejouer avec le même ordre ou mélanger les joueurs ?</p>
+                <button class="btn btn-primary" onclick="restartWithSameOrder()">Même ordre</button>
+                <button class="btn btn-secondary" onclick="reshufflePlayers()">Mélanger</button>
+                <button class="btn btn-secondary" onclick="resetGame()">Nouvelle partie</button>
             </div>
         </div>
     </div>
 
     <script src="assets/script.js"></script>
     <script>
-        if ('serviceWorker' in navigator) {
+        if (
+            'serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('sw.js').catch(err => console.log("SW registration failed", err));
             });

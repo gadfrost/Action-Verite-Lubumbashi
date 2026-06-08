@@ -294,11 +294,19 @@ function displayChallenge(challenge, type) {
     const typeLabel = type === 'truth' ? 'Vérité' : 'Action';
     const typeEmoji = type === 'truth' ? '🤔' : '🎬';
 
-    document.getElementById('challengeType').textContent = `${typeEmoji} ${typeLabel}`;
-    document.getElementById('challengeText').textContent = challenge;
+    const challengeDisplay = document.getElementById('challengeDisplay');
+    const typeElement = document.getElementById('challengeType');
+    const textElement = document.getElementById('challengeText');
+    
+    typeElement.textContent = `${typeEmoji} ${typeLabel}`;
+    textElement.textContent = challenge;
     
     document.querySelector('.choice-buttons').style.display = 'none';
-    document.getElementById('challengeDisplay').classList.remove('hidden');
+    challengeDisplay.classList.remove('hidden');
+    challengeDisplay.style.animation = 'none';
+    setTimeout(() => {
+        challengeDisplay.style.animation = '';
+    }, 10);
 }
 
 function nextChallenge() {
