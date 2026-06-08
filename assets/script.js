@@ -63,14 +63,12 @@ window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     // Stocke l'événement pour plus tard
     deferredPrompt = e;
-    // Affiche le bouton d'installation avec un petit délai pour s'assurer que le DOM est prêt
-    setTimeout(() => {
-        const installBtn = document.getElementById('installBtn');
-        if (installBtn) {
-            installBtn.style.display = 'flex';
-            console.log('Bouton d\'installation affiché');
-        }
-    }, 500);
+    // Affiche le bouton d'installation immédiatement
+    const installBtn = document.getElementById('installBtn');
+    if (installBtn) {
+        installBtn.style.display = 'flex';
+        console.log('Bouton d\'installation PWA disponible');
+    }
 });
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -97,12 +95,18 @@ window.addEventListener('appinstalled', (evt) => {
 // ============================================
 
 function showScreen(screenId) {
+    // Masquer tous les écrans
     const screens = document.querySelectorAll('.screen');
     screens.forEach(screen => {
         screen.classList.remove('active');
+        screen.style.display = 'none';
     });
+    // Afficher l'écran cible
     const target = document.getElementById(screenId);
-    target.classList.add('active');
+    if (target) {
+        target.classList.add('active');
+        target.style.display = 'flex';
+    }
 }
 
 function selectDifficulty(difficulty) {
@@ -339,18 +343,27 @@ function resetGame() {
 function initDownload() {
     const downloadBtn = document.getElementById('downloadBtn');
     
-    downloadBtn?.addEventListener('click', async () => {
-        // Si le prompt d'installation PWA est disponible, on l'utilise
-        if (deferredPrompt) {
-            deferredPrompt.prompt();
-            const { outcome } = await deferredPrompt.userChoice;
-            console.log(`Résultat de l'installation: ${outcome}`);
-            deferredPrompt = null;
-        } else {
-            // Sinon, on informe l'utilisateur comment "télécharger" (installer) manuellement
-            alert("Pour installer l'application de façon permanente :\n\n📱 Sur Android : Cliquez sur les 3 points en haut à droite puis 'Installer l'application'.\n\n📱 Sur iPhone : Cliquez sur l'icône de partage en bas puis 'Sur l'écran d'accueil'.");
-        }
-    });
+    if (downloadBtn) {
+        downloadBtn.addEventListener('click', async (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            // Si le prompt d'installation PWA est disponible, on l'utilise
+            if (deferredPrompt) {
+                try {
+                    deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    console.log(`Résultat de l'installation: ${outcome}`);
+                    deferredPrompt = null;
+                } catch (err) {
+                    console.error('Erreur lors de l\'installation:', err);
+                }
+            } else {
+                // Sinon, on informe l'utilisateur comment "télécharger" (installer) manuellement
+                alert("Pour installer l'application de façon permanente :\n\n📱 Sur Android : Cliquez sur les 3 points en haut à droite puis 'Installer l'application'.\n\n📱 Sur iPhone : Cliquez sur l'icône de partage en bas puis 'Sur l'écran d'accueil'.");
+            }
+        });
+    }
 }
 
 // Initialisation
@@ -358,5 +371,10 @@ document.addEventListener('DOMContentLoaded', () => {
     initTheme();
     initDownload();
     updateStartGameButton();
+    // S'assurer que tous les écrans sauf celui de difficulté sont cachés
+    const screens = document.querySelectorAll('.screen');
+    screens.forEach(screen => {
+        screen.style.display = 'none';
+    });
     showScreen('difficultyScreen');
 });
